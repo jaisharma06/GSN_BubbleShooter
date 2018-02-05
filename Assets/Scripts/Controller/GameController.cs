@@ -1,6 +1,4 @@
 ﻿using UnityEngine;
-using System.Collections;
-using BubbleShooter.events;
 using BubbleShooter.gui;
 
 namespace BubbleShooter{
