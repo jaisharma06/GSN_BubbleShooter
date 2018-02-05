@@ -4,7 +4,7 @@ namespace BubbleShooter{
 	
 	
 	
-	public class BubbleMatrixController : MonoBehaviour {
+	public class BubbleGridController : MonoBehaviour {
 		// Geometry */
 		public float leftBorder = 0.0f;
 		public float rightBorder = 10.5f;
@@ -16,7 +16,7 @@ namespace BubbleShooter{
 		public float bubbleRadius = 0.5f;
 		public float addRowPeriod = 10.0f;
 		/* View Properties */
-		public BubbleMatrixGeometry geometry;
+		public BubbleGridGeometry geometry;
 		
 		
 		// Constants
@@ -26,7 +26,7 @@ namespace BubbleShooter{
 		
 		// Private iVars
 		
-		private BubbleMatrix _matrix;
+		private BubbleGridModel _grid;
 		private GameObject _bubblesContainer;
 		private GameObject _bubbleShooter;
 		private BubbleController _currentBubble;
@@ -38,7 +38,7 @@ namespace BubbleShooter{
 		void Awake(){
 			this._isPlaying = false;
 			this._pendingToAddRow = false;
-			this._matrix = new BubbleMatrix(rows, columns);
+			this._grid = new BubbleGridModel(rows, columns);
 			this._bubbleControllers = new ArrayList();
 		}
 		
@@ -49,7 +49,7 @@ namespace BubbleShooter{
 			
 			this._bubblesContainer = GameObject.Find("Bubbles");
             this._bubbleShooter = FindObjectOfType<BubbleShooterController>().gameObject;
-			this.geometry = new BubbleMatrixGeometry(leftBorder, rightBorder, topBorder, 0.0f, rows, columns, bubbleRadius);
+			this.geometry = new BubbleGridGeometry(leftBorder, rightBorder, topBorder, 0.0f, rows, columns, bubbleRadius);
 			this._currentBubble = this.createBubble();
 			this._isPlaying = true;
 			StartCoroutine("addRowScheduler");
@@ -101,14 +101,14 @@ namespace BubbleShooter{
 		}
 		
 		private void destroyBubble(BubbleController bubbleController, bool explodes){
-			this._matrix.remove(bubbleController.bubble);
+			this._grid.Remove(bubbleController.bubble);
 			this._bubbleControllers.Remove(bubbleController);
 			bubbleController.CollisionDelegate = null;
 			bubbleController.kill(explodes);
 			//Destroy(bubbleController.gameObject);
 		}
 		
-		private BubbleController controllerForBubble(Bubble bubble){
+		private BubbleController controllerForBubble(BubbleModel bubble){
 			foreach (BubbleController bubbleController in this._bubbleControllers){
 				if (bubbleController.bubble == bubble)
 					return bubbleController;
@@ -124,7 +124,7 @@ namespace BubbleShooter{
 		}
 		
 		private void destroyCluster(ArrayList cluster, bool explodes){
-			foreach (Bubble bubble in cluster){
+			foreach (BubbleModel bubble in cluster){
 				this.destroyBubble(this.controllerForBubble(bubble), explodes);
 			}
 		}
@@ -132,18 +132,18 @@ namespace BubbleShooter{
 		
 		private void addRow(){
 			this._pendingToAddRow = false;
-			bool overflows = this._matrix.shiftOneRow();
+			bool overflows = this._grid.shiftOneRow();
 			
 			
 			for (int i = 0; i<this.geometry.columns; i++){
 				BubbleController bubbleController = this.createBubble();
 				bubbleController.isMoving = false;
-				this._matrix.insert(bubbleController.bubble, 0,i);
+				this._grid.Insert(bubbleController.bubble, 0,i);
 			}
 			
 			foreach (BubbleController bubbleController in this._bubbleControllers){
 				if (bubbleController != this._currentBubble){
-					Vector3 position = BubbleMatrixControllerHelper.PositionForCell(this._matrix.location(bubbleController.bubble), geometry, this._matrix.isBaselineAlignedLeft);
+					Vector3 position = BubbleGridControllerHelper.PositionForCell(this._grid.Location(bubbleController.bubble), geometry, this._grid.isBaselineAlignedLeft);
 					//bubbleController.moveTo(position, this._shiftAnimationDuration);				
 					bubbleController.transform.position = position;
 				}
@@ -163,7 +163,7 @@ namespace BubbleShooter{
 		private void FinishGame(GameState state){
 			BubbleShooterController shooterController = this._bubbleShooter.GetComponent<BubbleShooterController>();
 			shooterController.isAiming = false;
-			GameEvents.GameFinished(state);
+			EventsManager.GameFinished(state);
 			this._isPlaying = false;
 		}
 		
@@ -177,44 +177,44 @@ namespace BubbleShooter{
 		void onBubbleCollision(GameObject bubble){
 			
 			// If the ball falls under the amoun of rows, the game is over
-			Vector2 bubblePos = BubbleMatrixControllerHelper.CellForPosition(bubble.transform.position, this.geometry, this._matrix.isBaselineAlignedLeft);
+			Vector2 bubblePos = BubbleGridControllerHelper.CellForPosition(bubble.transform.position, this.geometry, this._grid.isBaselineAlignedLeft);
 			if ((int)bubblePos.x >= this.geometry.rows){
 				this.FinishGame(GameState.Loose);
 				return;
 			}
 				
-			// Create the new bubble
+			// Create the new Bubble
 			BubbleController bubbleController = bubble.GetComponent<BubbleController>();
-			Vector2 matrixPosition = BubbleMatrixControllerHelper.CellForPosition(bubble.transform.position, this.geometry, this._matrix.isBaselineAlignedLeft);
+			Vector2 gridPosition = BubbleGridControllerHelper.CellForPosition(bubble.transform.position, this.geometry, this._grid.isBaselineAlignedLeft);
 
 			// Update the model
-			this._matrix.insert(bubbleController.bubble, (int)matrixPosition.x, (int)matrixPosition.y);
+			this._grid.Insert(bubbleController.bubble, (int)gridPosition.x, (int)gridPosition.y);
 	
-			// if we don't have to add a new row (because of the timer), move the bubble smoothly to its snapping point			
+			// if we don't have to add a new row (because of the timer), move the Bubble smoothly to its snapping point			
 			if (!this._pendingToAddRow){
-				bubbleController.moveTo(BubbleMatrixControllerHelper.PositionForCell(matrixPosition, geometry, this._matrix.isBaselineAlignedLeft), 0.1f);
+				bubbleController.moveTo(BubbleGridControllerHelper.PositionForCell(gridPosition, geometry, this._grid.isBaselineAlignedLeft), 0.1f);
 			}else{
 				// otherwise move it rapidly
-				bubbleController.transform.position = BubbleMatrixControllerHelper.PositionForCell(matrixPosition, geometry, this._matrix.isBaselineAlignedLeft);
+				bubbleController.transform.position = BubbleGridControllerHelper.PositionForCell(gridPosition, geometry, this._grid.isBaselineAlignedLeft);
 			}
 			
 			// Explode the bubbles that need to explode
 			// The the cluster of bubbles with a similar color as the colliding one
-			ArrayList cluster = this._matrix.colorCluster(bubbleController.bubble);
+			ArrayList cluster = this._grid.ColorCluster(bubbleController.bubble);
 			
 			if (cluster.Count > 2){
 				// Explode the cluster
-				bubbleController.transform.position = BubbleMatrixControllerHelper.PositionForCell(matrixPosition, geometry, this._matrix.isBaselineAlignedLeft);
+				bubbleController.transform.position = BubbleGridControllerHelper.PositionForCell(gridPosition, geometry, this._grid.isBaselineAlignedLeft);
 				this.destroyCluster(cluster, true);
 				// Notify that bubbles have been removed
-				GameEvents.BubblesRemoved(cluster.Count, true);
+				EventsManager.BubblesRemoved(cluster.Count, true);
 			}
 			
 			// Drop the bubbles that fall
-			cluster = this._matrix.looseBubbles();
+			cluster = this._grid.LooseBubbles();
 			this.destroyCluster(cluster, false);
 			if (cluster.Count > 0)
-				GameEvents.BubblesRemoved(cluster.Count, false);
+				EventsManager.BubblesRemoved(cluster.Count, false);
 			
 			// Add a new Row of random bubbles if required
 			if (_pendingToAddRow){
@@ -222,26 +222,26 @@ namespace BubbleShooter{
 				StartCoroutine("addRowScheduler");
 			}
 			
-			// If there are no bubble lefts, win the game
-			if (this._matrix.bubbles.Count == 0){
+			// If there are no Bubble lefts, win the game
+			if (this._grid.bubbles.Count == 0){
 				this.FinishGame(GameState.Win);
 				return;
 			}
 			
-			// Prepare the new bubble to shoot it
+			// Prepare the new Bubble to shoot it
 			this._currentBubble = this.createBubble();
 		}
 		
 		/*
-		 * Delegate method to lets the bubble controler know if the move to location is allowed
+		 * Delegate method to lets the Bubble controler know if the move to Location is allowed
 		 * Used to avoid a situation when two balls can end up in the same snapping point
 		 * if the Time.delta is sufficently large between two frames
 		 * 
 		*/
 		bool canMoveToPosition(Vector3 position){
-			Vector2 location = BubbleMatrixControllerHelper.CellForPosition(position, this.geometry, this._matrix.isBaselineAlignedLeft);
+			Vector2 location = BubbleGridControllerHelper.CellForPosition(position, this.geometry, this._grid.isBaselineAlignedLeft);
 			if ((int)location.x <= this.geometry.rows-1){
-				return !this._matrix.hasBubble((int)location.x, (int)location.y);	 
+				return !this._grid.HasBubble((int)location.x, (int)location.y);	 
 			}
 			return true;
 		}

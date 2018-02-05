@@ -7,7 +7,7 @@ namespace BubbleShooter
     public class GameController : MonoBehaviour
     {
 
-        protected Game _game;
+        protected GameModel _game;
 
         [SerializeField]
         private GameObject bubbleShooter;
@@ -16,10 +16,10 @@ namespace BubbleShooter
         [SerializeField]
         private GameObject restartButton;
 
-        private BubbleMatrixController _bubbleMatrixController;
+        private BubbleGridController _bubbleGridController;
         void Awake()
         {
-            _game = new BubbleShooter.Game();
+            _game = new BubbleShooter.GameModel();
         }
 
         void Start()
@@ -29,14 +29,14 @@ namespace BubbleShooter
 
         void OnEnable()
         {
-            GameEvents.OnBubblesRemoved += onBubblesRemoved;
-            GameEvents.OnGameFinished += onGameFinished;
+            EventsManager.OnBubblesRemoved += onBubblesRemoved;
+            EventsManager.OnGameFinished += onGameFinished;
         }
 
         void OnDisable()
         {
-            GameEvents.OnBubblesRemoved -= onBubblesRemoved;
-            GameEvents.OnGameFinished -= onGameFinished;
+            EventsManager.OnBubblesRemoved -= onBubblesRemoved;
+            EventsManager.OnGameFinished -= onGameFinished;
         }
 
         public void startGame()
@@ -44,11 +44,11 @@ namespace BubbleShooter
             bubbleShooter.transform.position = new Vector3(0, 0, 0);
             if (playButton)
                 playButton.SetActive(false);
-            _bubbleMatrixController = bubbleShooter.GetComponent<BubbleMatrixController>();
+            _bubbleGridController = bubbleShooter.GetComponent<BubbleGridController>();
 
-            _bubbleMatrixController.startGame();
+            _bubbleGridController.startGame();
         }
-        // Game Controllers Specializations can override this function to provide
+        // GameModel Controllers Specializations can override this function to provide
         // specific score behaviour
         protected virtual void onBubblesRemoved(int bubbleCount, bool exploded)
         {

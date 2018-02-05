@@ -2,12 +2,12 @@
 using System.Collections;
 
 namespace BubbleShooter{
-	public enum BubbleColor {Red, Blue, Yellow, Green, Black, White};
-	public class Bubble {
+	public enum BubbleColor {Red, Blue, Yellow, Green, Black, White, Pink};
+	public class BubbleModel {
 		
 		private BubbleColor _color;
 		
-		public Bubble(BubbleColor color){
+		public BubbleModel(BubbleColor color){
 			this._color = color;
 			
 		}

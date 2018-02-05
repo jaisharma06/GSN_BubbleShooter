@@ -7,7 +7,7 @@ namespace BubbleShooter{
 		/*
 		*  Model
 		*/
-		public Bubble bubble; 
+		public BubbleModel bubble; 
 		
 		
 		/*
@@ -48,7 +48,7 @@ namespace BubbleShooter{
 		}
 	
 		void Awake(){
-			bubble = new Bubble(Utils.GetRandomEnum<BubbleColor>());
+			bubble = new BubbleModel(Utils.GetRandomEnum<BubbleColor>());
 		}
 	
 		void Start () {

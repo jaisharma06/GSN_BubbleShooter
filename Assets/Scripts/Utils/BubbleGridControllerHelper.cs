@@ -2,10 +2,10 @@
 namespace BubbleShooter
 {
 
-    public class BubbleMatrixControllerHelper
+    public class BubbleGridControllerHelper
     {
 
-        public static Vector2 CellForPosition(Vector3 position, BubbleMatrixGeometry geometry, bool isBaselineAlignedLeft)
+        public static Vector2 CellForPosition(Vector3 position, BubbleGridGeometry geometry, bool isBaselineAlignedLeft)
         {
             int row = geometry.rows - Mathf.FloorToInt(position.y) - 1;
             int column;
@@ -23,7 +23,7 @@ namespace BubbleShooter
         }
 
 
-        public static Vector3 PositionForCell(Vector2 cell, BubbleMatrixGeometry geometry, bool isBaselineAlignedLeft)
+        public static Vector3 PositionForCell(Vector2 cell, BubbleGridGeometry geometry, bool isBaselineAlignedLeft)
         {
             bool rowIsEven = cell.x % 2 == 0;
             float y = geometry.rows - cell.x - geometry.bubbleRadius;

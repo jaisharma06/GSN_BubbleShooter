@@ -2,7 +2,7 @@
 
 namespace BubbleShooter{
 	
-public class GameEvents{
+public class EventsManager{
 	
 		public static Action<int, bool> OnBubblesRemoved;
         public static Action<GameState> OnGameFinished;
