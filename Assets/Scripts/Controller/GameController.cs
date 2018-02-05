@@ -1,74 +1,68 @@
 ﻿using UnityEngine;
-using BubbleShooter.gui;
 using UnityEngine.SceneManagement;
 
-namespace BubbleShooter{
-	
-	public class GameController : MonoBehaviour {
-		
-		protected Game _game;
-	
-		private const string _bubbleShooterPrefabName = "Prefabs/BubbleShooterPrefab";
-		private GameObject _bubbleShooterPrefab;	
-		private GameObject _camera;
-		private BubbleMatrixController _bubbleMatrixController;
-		private HUD _hud;
-		void Awake(){
-			_game = new BubbleShooter.Game();	
-		}
-		
-		void Start () {
-			_camera = GameObject.Find("Camera");
-			_hud = _camera.AddComponent<HUD>();
-			_hud.game = this._game;
-			this.startGame();
-			
-		
-		}
-		
-		void OnEnable(){
-			GameEvents.OnBubblesRemoved += onBubblesRemoved;
-			GameEvents.OnGameFinished +=onGameFinished;
-		}
-		
-		void OnDisable(){
-			GameEvents.OnBubblesRemoved -= onBubblesRemoved;
-			GameEvents.OnGameFinished -=onGameFinished;
-		}
-		
-		void Update () {
-	
-		}
-		
-		private void startGame(){
-			_bubbleShooterPrefab = Instantiate(Resources.Load(_bubbleShooterPrefabName)) as GameObject;
-			_bubbleShooterPrefab.transform.position = new Vector3(0,0,0);
-			_bubbleMatrixController = _bubbleShooterPrefab.GetComponent<BubbleMatrixController>();
-			
-			_bubbleMatrixController.startGame();
-				
-			
-			
-		}
-		// Game Controllers Specializations can override this function to provide
-		// specific score behaviour
-		protected virtual void onBubblesRemoved(int bubbleCount, bool exploded){
-			this._game.destroyBubbles(bubbleCount, exploded);
-		}
-		
-		protected virtual void onGameFinished(GameState state){
-			GameFinishedGUI finishedGUI =  _camera.AddComponent<GameFinishedGUI>();
-			finishedGUI.StartNewGameSelectedDelegate = this.onGameStartSelected;
-			this._game.state = state;
-			finishedGUI.game = this._game;
-			
-		}
-		
-		private void onGameStartSelected(){
-			SceneManager.LoadScene ("GameScene");
-		}
-		
-	
-		
-	}
+namespace BubbleShooter
+{
+
+    public class GameController : MonoBehaviour
+    {
+
+        protected Game _game;
+
+        [SerializeField]
+        private GameObject bubbleShooter;
+        [SerializeField]
+        private GameObject playButton;
+        [SerializeField]
+        private GameObject restartButton;
+
+        private BubbleMatrixController _bubbleMatrixController;
+        void Awake()
+        {
+            _game = new BubbleShooter.Game();
+        }
+
+        void Start()
+        {
+
+        }
+
+        void OnEnable()
+        {
+            GameEvents.OnBubblesRemoved += onBubblesRemoved;
+            GameEvents.OnGameFinished += onGameFinished;
+        }
+
+        void OnDisable()
+        {
+            GameEvents.OnBubblesRemoved -= onBubblesRemoved;
+            GameEvents.OnGameFinished -= onGameFinished;
+        }
+
+        public void startGame()
+        {
+            bubbleShooter.transform.position = new Vector3(0, 0, 0);
+            if (playButton)
+                playButton.SetActive(false);
+            _bubbleMatrixController = bubbleShooter.GetComponent<BubbleMatrixController>();
+
+            _bubbleMatrixController.startGame();
+        }
+        // Game Controllers Specializations can override this function to provide
+        // specific score behaviour
+        protected virtual void onBubblesRemoved(int bubbleCount, bool exploded)
+        {
+            this._game.destroyBubbles(bubbleCount, exploded);
+        }
+
+        protected virtual void onGameFinished(GameState state)
+        {
+            restartButton.SetActive(true);
+        }
+
+        public void onGameStartSelected()
+        {
+            SceneManager.LoadScene("GameScene");
+        }
+    }
 }

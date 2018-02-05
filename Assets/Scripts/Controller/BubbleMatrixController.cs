@@ -48,7 +48,7 @@ namespace BubbleShooter{
 		public void startGame(){
 			
 			this._bubblesContainer = GameObject.Find("Bubbles");
-			this._bubbleShooter = GameObject.Find ("BubbleShooter");
+            this._bubbleShooter = FindObjectOfType<BubbleShooterController>().gameObject;
 			this.geometry = new BubbleMatrixGeometry(leftBorder, rightBorder, topBorder, 0.0f, rows, columns, bubbleRadius);
 			this._currentBubble = this.createBubble();
 			this._isPlaying = true;
