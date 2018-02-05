@@ -20,7 +20,6 @@ namespace BubbleShooter
 
         private const float destroySpeed = 10.0f;
 
-
         MotionDetectionDelegate motionDelegate;
         public delegate bool MotionDetectionDelegate(Vector3 position);
 

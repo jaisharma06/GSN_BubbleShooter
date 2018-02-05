@@ -3,7 +3,6 @@ using UnityEngine.SceneManagement;
 
 namespace BubbleShooter
 {
-
     public class GameController : MonoBehaviour
     {
         [HideInInspector]
@@ -36,7 +35,7 @@ namespace BubbleShooter
             EventsManager.OnGameFinished -= OnGameFinished;
         }
 
-        public void startGame()
+        public void StartGame()
         {
             bubbleShooter.transform.position = new Vector3(0, 0, 0);
             if (playButton)
@@ -46,12 +45,12 @@ namespace BubbleShooter
             _bubbleGridController.StartGame();
         }
 
-        protected virtual void OnBubblesRemoved(int bubbleCount, bool exploded)
+        private void OnBubblesRemoved(int bubbleCount, bool exploded)
         {
             _game.destroyBubbles(bubbleCount, exploded);
         }
 
-        protected virtual void OnGameFinished(GameState state)
+        private void OnGameFinished(GameState state)
         {
             if (state == GameState.Win)
             {

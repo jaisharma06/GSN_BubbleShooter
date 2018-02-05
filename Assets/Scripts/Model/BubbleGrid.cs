@@ -69,30 +69,30 @@ namespace BubbleShooter{
                 return null;
 			
 			if (_bubbleGrid[row, column] != null){			
-				_neigbours.AddNotNull(_bubbleGrid[row,column]);
+				_neigbours.AddObjects(_bubbleGrid[row,column]);
 
-				if (column > 0) _neigbours.AddNotNull(_bubbleGrid[row,column -1]);
-				if (column < _columns-1) _neigbours.AddNotNull(_bubbleGrid[row,column+1]);
+				if (column > 0) _neigbours.AddObjects(_bubbleGrid[row,column -1]);
+				if (column < _columns-1) _neigbours.AddObjects(_bubbleGrid[row,column+1]);
 				
 				bool isRowEven = row % 2 == 0;
 				if ((isBaselineAlignedLeft && isRowEven) || (!isBaselineAlignedLeft && !isRowEven) ){
 					if (row > 0){
-							if (column > 0) _neigbours.AddNotNull(_bubbleGrid[row-1, column-1]);
-							_neigbours.AddNotNull(_bubbleGrid[row-1, column]);
+							if (column > 0) _neigbours.AddObjects(_bubbleGrid[row-1, column-1]);
+							_neigbours.AddObjects(_bubbleGrid[row-1, column]);
 						}
 						if (row < _rows -1){
-							if (column > 0) _neigbours.AddNotNull(_bubbleGrid[row+1, column-1]);
-							_neigbours.AddNotNull(_bubbleGrid[row +1, column]);
+							if (column > 0) _neigbours.AddObjects(_bubbleGrid[row+1, column-1]);
+							_neigbours.AddObjects(_bubbleGrid[row +1, column]);
 						}
 				}
 				else{
 					if (row > 0){
-						_neigbours.AddNotNull(_bubbleGrid[row-1, column]);
-						if (column < _columns - 1) _neigbours.AddNotNull(_bubbleGrid[row-1, column+1]);
+						_neigbours.AddObjects(_bubbleGrid[row-1, column]);
+						if (column < _columns - 1) _neigbours.AddObjects(_bubbleGrid[row-1, column+1]);
 					}
 					if (row < _rows - 1){
-						_neigbours.AddNotNull(_bubbleGrid[row+1, column]);
-						if (column < _columns - 1) _neigbours.AddNotNull(_bubbleGrid[row+1, column+1]);
+						_neigbours.AddObjects(_bubbleGrid[row+1, column]);
+						if (column < _columns - 1) _neigbours.AddObjects(_bubbleGrid[row+1, column+1]);
 					}
 				}
 				return _neigbours;
