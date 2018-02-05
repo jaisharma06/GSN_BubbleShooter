@@ -5,7 +5,6 @@ namespace BubbleShooter
 {
     public class BubbleController : MonoBehaviour
     {
-
         public BubbleModel bubble;
 
         #region View
@@ -19,7 +18,7 @@ namespace BubbleShooter
         public bool isMoving;
         #endregion
 
-        private const float _killSpeed = 10.0f;
+        private const float destroySpeed = 10.0f;
 
 
         MotionDetectionDelegate motionDelegate;
@@ -86,22 +85,32 @@ namespace BubbleShooter
             Destroy(GetComponent<Collider2D>());
             if (explodes)
             {
-                iTween.ScaleTo(gameObject, new Vector3(0, 0, 0), 0.15f);
+               bounce();
             }
             else
             {
                 Vector3 killPosition = new Vector3(transform.position.x, 0f, 0f);
                 float distance = Vector3.Distance(transform.position, killPosition);
-                moveTo(killPosition, distance / _killSpeed);
+                moveTo(killPosition, distance / destroySpeed);
             }
         }
 
         public void moveTo(Vector3 destination, float duration)
         {
-            iTween.MoveTo(gameObject, iTween.Hash("position", destination, "time", duration, "oncomplete", "OnMoveComplete", "oncompletetarget", gameObject));
+            iTween.MoveTo(gameObject, iTween.Hash("position", destination, "time", duration, "oncomplete", "OnComplete", "oncompletetarget", gameObject));
         }
 
-        private void OnMoveComplete()
+        private void bounce()
+        {
+            iTween.MoveTo(gameObject, iTween.Hash("position", transform.position + new Vector3(0, 0.5f, 0), "time", 0.1f, "oncomplete", "OnBounce"));
+        }
+
+        private void OnBounce()
+        {
+            moveTo(transform.position + new Vector3(0, -10, 0), 4f);
+        }
+
+        private void OnComplete()
         {
             if (GetComponent<Rigidbody2D>() == null)
             {

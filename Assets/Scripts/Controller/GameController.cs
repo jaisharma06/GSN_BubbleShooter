@@ -6,8 +6,8 @@ namespace BubbleShooter
 
     public class GameController : MonoBehaviour
     {
-
-        protected GameModel _game;
+        [HideInInspector]
+        public GameModel _game;
 
         [SerializeField]
         private GameObject bubbleShooter;
@@ -19,12 +19,7 @@ namespace BubbleShooter
         private BubbleGridController _bubbleGridController;
         void Awake()
         {
-            _game = new BubbleShooter.GameModel();
-        }
-
-        void Start()
-        {
-
+            _game = new GameModel();
         }
 
         void OnEnable()
@@ -48,11 +43,10 @@ namespace BubbleShooter
 
             _bubbleGridController.startGame();
         }
-        // GameModel Controllers Specializations can override this function to provide
-        // specific score behaviour
+
         protected virtual void onBubblesRemoved(int bubbleCount, bool exploded)
         {
-            this._game.destroyBubbles(bubbleCount, exploded);
+            _game.destroyBubbles(bubbleCount, exploded);
         }
 
         protected virtual void onGameFinished(GameState state)
