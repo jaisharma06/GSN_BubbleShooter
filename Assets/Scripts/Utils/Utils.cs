@@ -19,19 +19,21 @@ namespace BubbleShooter
             switch (color)
             {
                 case BubbleColor.Black:
-                    return new Color(0.3f, 0.3f, 0.3f);
+                    return Color.black;
                 case BubbleColor.Blue:
-                    return new Color(0.0f, 0.0f, 1.0f);
+                    return Color.blue;
                 case BubbleColor.Green:
-                    return new Color(0.0f, 1.0f, 0.0f);
+                    return Color.green;
                 case BubbleColor.Red:
-                    return new Color(1.0f, 0.0f, 0.0f);
+                    return Color.red;
                 case BubbleColor.White:
-                    return new Color(1.0f, 1.0f, 1.0f);
+                    return Color.white;
                 case BubbleColor.Yellow:
-                    return new Color(1.0f, 1.0f, 0.0f);
+                    return Color.yellow;
+                case BubbleColor.Pink:
+                    return Color.magenta;
                 default:
-                    return new Color(0.0f, 1.0f, 1.0f);
+                    return Color.clear;
             }
         }
 

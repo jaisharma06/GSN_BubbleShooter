@@ -1,170 +1,145 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-namespace BubbleShooter{
-	public class BubbleController : MonoBehaviour {
-		
-		/*
-		*  Model
-		*/
-		public BubbleModel bubble; 
-		
-		
-		/*
-		 * View Properties
-		 */
-		public float leftBorder; // TODO Move to Geometry Delegate
-		public float rightBorder; // TODO Move To Geometry Delegate
-		public float topBorder; // TODO Move to Geometry Delegate
-		
-		public float linearSpeed; // units / sec
-		public float radius;
-		public float angle; // -90 .. 90  The trayectory angle ___\___
-		public bool isMoving;
-		
-		/* Constants */
-		private const float _killSpeed = 10.0f;
-		
-		/*
-		 * Delegates
-		 */
-		
-		MotionDetectionDelegate motionDelegate;
-		public delegate bool MotionDetectionDelegate(Vector3 position);
-		
-		CollisionDetectionDelegate collisionDelegate;
-		public delegate void CollisionDetectionDelegate(GameObject bubble);
-	
-		/* Setters and getters */
-		public CollisionDetectionDelegate CollisionDelegate{
-			set{
-			collisionDelegate = value;			
-			}
-		}
-		public MotionDetectionDelegate MotionDelegate{
-			set{
-				motionDelegate = value;
-			}
-		}
-	
-		void Awake(){
-			bubble = new BubbleModel(Utils.GetRandomEnum<BubbleColor>());
-		}
-	
-		void Start () {
-			
-			
-			this.GetComponent<SpriteRenderer>().color = Utils.BubbleColorToColor(bubble.color);		
-		}
+namespace BubbleShooter
+{
+    public class BubbleController : MonoBehaviour
+    {
 
-		void Update () {
-			if (isMoving){
-				this.transform.Translate(Vector3.right * this.linearSpeed * Mathf.Cos(Mathf.Deg2Rad *this.angle) * Time.deltaTime);
-				this.transform.Translate(Vector3.up * this.linearSpeed * Mathf.Sin(Mathf.Deg2Rad *this.angle) * Time.deltaTime);
-				if (this.motionDelegate != null){
-					if (!this.motionDelegate(this.transform.position)){
-						// revert position
-						this.transform.Translate(Vector3.left * this.linearSpeed * Mathf.Cos(Mathf.Deg2Rad *this.angle) * Time.deltaTime);	
-						this.transform.Translate(Vector3.down * this.linearSpeed * Mathf.Sin(Mathf.Deg2Rad *this.angle) * Time.deltaTime);
-						this.isMoving = false;
-						if (collisionDelegate != null)
-						{
-							collisionDelegate(this.gameObject);
-						}
-					}
-					else
-					{
-					this.updateDirection();
-					}
-				}	
-			}
-		}
-		
-		public void kill(bool explodes){
-			StopAllCoroutines();
-			Destroy(this.transform.GetComponent<Rigidbody2D>());
-			Destroy(this.transform.GetComponent<Collider2D>());
-			if (explodes)
-			{
-				StartCoroutine(scaleTo(new Vector3(0,0,0), 0.15f));
-			}else
-			{
-				Vector3 killPosition = new Vector3(this.transform.position.x, 0f, 0f);
-				float distance = Vector3.Distance(this.transform.position, killPosition);
-				this.moveTo(killPosition, distance/_killSpeed);
-			}
-		}
-		
-		public void moveTo(Vector3 destination, float duration){
-			StartCoroutine(tweenTo(destination, duration));	
-		}
-		
-		IEnumerator tweenTo(Vector3 destination, float duration){
-			float timeThrough = 0.0f;
-			Vector3 initialPosition = transform.position;
-			while (Vector3.Distance(transform.position, destination) >= 0.05){
-				
-				timeThrough += Time.deltaTime;
-				Vector3 target = Vector3.Lerp(initialPosition, destination, timeThrough / duration);
-				transform.position = target;
-				yield return null;
-			}
-			transform.position = destination;
-			if (this.GetComponent<Rigidbody2D>() == null){
-				Destroy (this.gameObject);
-			}
-		}
-		
-		IEnumerator scaleTo(Vector3 scale, float duration){
-			float timeThrough = 0.0f;
-			
-			Vector3 initialScale = transform.localScale;
+        public BubbleModel bubble;
 
-			while (transform.localScale.x >= 0.1){
-				timeThrough += Time.deltaTime;
-				Vector3 target = Vector3.Lerp(initialScale, scale, timeThrough / duration);
-				transform.localScale = target;
-				yield return null;
-			}
-			if (this.GetComponent<Rigidbody2D>() == null){
-				Destroy (this.gameObject);
-			}
-		}
-		
-		
-		void OnTriggerEnter2D(Collider2D collider){
-			if (this.isMoving){
-				this.isMoving = false;
-				if (collisionDelegate != null){
-					collisionDelegate(this.gameObject);
-				}
-			}
-		}
-			
-		void updateDirection(){
-			
-			/*TODO: Piority Medium
-			 * Warning, since we are updating after moving, there is a chance that 
-			 * we could fall outside of the border if there was not sufficent time between 
-			 * two clock ticks. Improvement: Move only until the border coordinate max, and if there is an excess,
-			 * move the excess in the opposite direction 
-			 * 
-			 */
-			
-			if (this.transform.position.x + this.radius >= this.rightBorder || this.transform.position.x - this.radius <= this.leftBorder){
-				this.angle = 180.0f - this.angle;
-				if (this.transform.position.x + this.radius >= this.rightBorder)
-					this.transform.position = new Vector3(this.rightBorder - this.radius, this.transform.position.y, this.transform.position.z);
-				if(this.transform.position.x - this.radius <= this.leftBorder)
-					this.transform.position = new Vector3(this.leftBorder + this.radius, this.transform.position.y, this.transform.position.z);
-			}
-			
-			if (this.transform.position.y + this.radius >= this.topBorder){
-				this.isMoving = false;
-				if (collisionDelegate != null){
-					collisionDelegate(this.gameObject);
-				}
-			}
-		}
-	}
+        #region View
+        public float leftBorder;
+        public float rightBorder;
+        public float topBorder;
+
+        public float speed;
+        public float radius;
+        public float angle;
+        public bool isMoving;
+        #endregion
+
+        private const float _killSpeed = 10.0f;
+
+
+        MotionDetectionDelegate motionDelegate;
+        public delegate bool MotionDetectionDelegate(Vector3 position);
+
+        CollisionDetectionDelegate collisionDelegate;
+        public delegate void CollisionDetectionDelegate(GameObject bubble);
+
+        public CollisionDetectionDelegate CollisionDelegate
+        {
+            set
+            {
+                collisionDelegate = value;
+            }
+        }
+        public MotionDetectionDelegate MotionDelegate
+        {
+            set
+            {
+                motionDelegate = value;
+            }
+        }
+
+        void Awake()
+        {
+            bubble = new BubbleModel(Utils.GetRandomEnum<BubbleColor>());
+        }
+
+        void Start()
+        {
+            GetComponent<SpriteRenderer>().color = Utils.BubbleColorToColor(bubble.color);
+        }
+
+        void Update()
+        {
+            if (isMoving)
+            {
+                this.transform.Translate(Vector3.right * speed * Mathf.Cos(Mathf.Deg2Rad * angle) * Time.deltaTime);
+                this.transform.Translate(Vector3.up * speed * Mathf.Sin(Mathf.Deg2Rad * angle) * Time.deltaTime);
+                if (this.motionDelegate != null)
+                {
+                    if (!motionDelegate(transform.position))
+                    {
+                        transform.Translate(Vector3.left * speed * Mathf.Cos(Mathf.Deg2Rad * angle) * Time.deltaTime);
+                        transform.Translate(Vector3.down * speed * Mathf.Sin(Mathf.Deg2Rad * angle) * Time.deltaTime);
+                        isMoving = false;
+                        if (collisionDelegate != null)
+                        {
+                            collisionDelegate(this.gameObject);
+                        }
+                    }
+                    else
+                    {
+                        updateDirection();
+                    }
+                }
+            }
+        }
+
+        public void kill(bool explodes)
+        {
+            StopAllCoroutines();
+            Destroy(GetComponent<Rigidbody2D>());
+            Destroy(GetComponent<Collider2D>());
+            if (explodes)
+            {
+                iTween.ScaleTo(gameObject, new Vector3(0, 0, 0), 0.15f);
+            }
+            else
+            {
+                Vector3 killPosition = new Vector3(transform.position.x, 0f, 0f);
+                float distance = Vector3.Distance(transform.position, killPosition);
+                moveTo(killPosition, distance / _killSpeed);
+            }
+        }
+
+        public void moveTo(Vector3 destination, float duration)
+        {
+            iTween.MoveTo(gameObject, iTween.Hash("position", destination, "time", duration, "oncomplete", "OnMoveComplete", "oncompletetarget", gameObject));
+        }
+
+        private void OnMoveComplete()
+        {
+            if (GetComponent<Rigidbody2D>() == null)
+            {
+                Destroy(gameObject);
+            }
+        }
+
+        void OnTriggerEnter2D(Collider2D collider)
+        {
+            if (this.isMoving)
+            {
+                this.isMoving = false;
+                if (collisionDelegate != null)
+                {
+                    collisionDelegate(gameObject);
+                }
+            }
+        }
+
+        void updateDirection()
+        {
+            if (this.transform.position.x + radius >= rightBorder || transform.position.x - radius <= leftBorder)
+            {
+                angle = 180.0f - angle;
+                if (transform.position.x + radius >= rightBorder)
+                    transform.position = new Vector3(rightBorder - radius, transform.position.y, transform.position.z);
+                if (transform.position.x - radius <= leftBorder)
+                    transform.position = new Vector3(leftBorder + radius, transform.position.y, transform.position.z);
+            }
+
+            if (transform.position.y + radius >= topBorder)
+            {
+                isMoving = false;
+                if (collisionDelegate != null)
+                {
+                    collisionDelegate(gameObject);
+                }
+            }
+        }
+    }
 }

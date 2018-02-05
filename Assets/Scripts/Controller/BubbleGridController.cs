@@ -79,7 +79,7 @@ namespace BubbleShooter{
 			bubbleController.rightBorder = this.geometry.rightBorder;
 			bubbleController.topBorder = this.geometry.topBorder;
 			bubbleController.radius = this.geometry.bubbleRadius;
-			bubbleController.linearSpeed = _bubbleLinearSpeed;
+			bubbleController.speed = _bubbleLinearSpeed;
 			bubbleController.angle = 90.0f;
 			bubbleController.isMoving = false;
 			bubbleController.CollisionDelegate = onBubbleCollision;
