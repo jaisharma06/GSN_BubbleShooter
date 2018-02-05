@@ -16,9 +16,6 @@ namespace BubbleShooter{
 		}
 		
 		void OnGUI(){
-			GUI.Label(new Rect(20,20,200,30), "Javier Quevedo-Fernandez");
-			GUI.Label(new Rect(20,40,200,30), "http://github.com/senc01a");
-			
 			TimeSpan timeSpan = TimeSpan.FromSeconds(Time.timeSinceLevelLoad - _timeOffset);
 			string timeText = string.Format("{0:D2}:{1:D2}:{2:D2}", timeSpan.Hours, timeSpan.Minutes, timeSpan.Seconds);
 			

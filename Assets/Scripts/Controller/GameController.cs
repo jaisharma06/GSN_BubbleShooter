@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using BubbleShooter.gui;
+using UnityEngine.SceneManagement;
 
 namespace BubbleShooter{
 	
@@ -64,7 +65,7 @@ namespace BubbleShooter{
 		}
 		
 		private void onGameStartSelected(){
-			Application.LoadLevel (0);
+			SceneManager.LoadScene ("GameScene");
 		}
 		
 	
