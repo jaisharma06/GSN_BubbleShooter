@@ -1,7 +1,4 @@
-﻿using UnityEngine;
-using System.Collections;
-
-namespace BubbleShooter{
+﻿namespace BubbleShooter{
 	public enum BubbleColor {Red, Blue, Yellow, Green, Black, White, Pink};
 	public class BubbleModel {
 		
@@ -14,10 +11,10 @@ namespace BubbleShooter{
 		
 		public BubbleColor color{
 			get{
-				return this._color;
+				return _color;
 			}
 			set {
-				this._color = value;
+				_color = value;
 			}
 		}
 		

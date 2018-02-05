@@ -72,42 +72,42 @@ namespace BubbleShooter
                     }
                     else
                     {
-                        updateDirection();
+                        UpdateDirection();
                     }
                 }
             }
         }
 
-        public void kill(bool explodes)
+        public void DestroyBubble(bool explodes)
         {
             StopAllCoroutines();
             Destroy(GetComponent<Rigidbody2D>());
             Destroy(GetComponent<Collider2D>());
             if (explodes)
             {
-               bounce();
+               Bounce();
             }
             else
             {
                 Vector3 killPosition = new Vector3(transform.position.x, 0f, 0f);
                 float distance = Vector3.Distance(transform.position, killPosition);
-                moveTo(killPosition, distance / destroySpeed);
+                MoveTo(killPosition, distance / destroySpeed);
             }
         }
 
-        public void moveTo(Vector3 destination, float duration)
+        public void MoveTo(Vector3 destination, float duration)
         {
             iTween.MoveTo(gameObject, iTween.Hash("position", destination, "time", duration, "oncomplete", "OnComplete", "oncompletetarget", gameObject));
         }
 
-        private void bounce()
+        private void Bounce()
         {
             iTween.MoveTo(gameObject, iTween.Hash("position", transform.position + new Vector3(0, 0.5f, 0), "time", 0.1f, "oncomplete", "OnBounce"));
         }
 
         private void OnBounce()
         {
-            moveTo(transform.position + new Vector3(0, -10, 0), 4f);
+            MoveTo(transform.position + new Vector3(0, -10, 0), 4f);
         }
 
         private void OnComplete()
@@ -130,7 +130,7 @@ namespace BubbleShooter
             }
         }
 
-        void updateDirection()
+        void UpdateDirection()
         {
             if (this.transform.position.x + radius >= rightBorder || transform.position.x - radius <= leftBorder)
             {

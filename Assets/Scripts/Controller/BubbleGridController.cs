@@ -42,16 +42,16 @@ namespace BubbleShooter
         {
         }
 
-        public void startGame()
+        public void StartGame()
         {
             geometry = new BubbleGridGeometry(leftBorder, rightBorder, topBorder, 0.0f, rows, columns, bubbleRadius);
-            _currentBubble = this.createBubble();
+            _currentBubble = this.CreateBubble();
             _isPlaying = true;
-            StartCoroutine(addRowScheduler());
+            StartCoroutine(AddRowScheduler());
 
             for (int i = 0; i < _defaultRowsCount; i++)
             {
-                addRow();
+                AddRow();
             }
 
         }
@@ -69,7 +69,7 @@ namespace BubbleShooter
             }
         }
 
-        private BubbleController createBubble()
+        private BubbleController CreateBubble()
         {
             GameObject bubble = Instantiate(bubblePrefab);
             bubble.transform.parent = _bubblesContainer.transform;
@@ -82,8 +82,8 @@ namespace BubbleShooter
             bubbleController.speed = _bubbleLinearSpeed;
             bubbleController.angle = 90.0f;
             bubbleController.isMoving = false;
-            bubbleController.CollisionDelegate = onBubbleCollision;
-            bubbleController.MotionDelegate = canMoveToPosition;
+            bubbleController.CollisionDelegate = OnBubbleCollision;
+            bubbleController.MotionDelegate = CanMoveToPosition;
             _bubbleControllers.Add(bubbleController);
             return bubbleController;
         }
@@ -103,15 +103,15 @@ namespace BubbleShooter
             return ballRotation;
         }
 
-        private void destroyBubble(BubbleController bubbleController, bool explodes)
+        private void DestroyBubble(BubbleController bubbleController, bool explodes)
         {
             _grid.Remove(bubbleController.bubble);
             _bubbleControllers.Remove(bubbleController);
             bubbleController.CollisionDelegate = null;
-            bubbleController.kill(explodes);
+            bubbleController.DestroyBubble(explodes);
         }
 
-        private BubbleController controllerForBubble(BubbleModel bubble)
+        private BubbleController ControllerForBubble(BubbleModel bubble)
         {
             foreach (BubbleController bubbleController in _bubbleControllers)
             {
@@ -121,7 +121,7 @@ namespace BubbleShooter
             return null;
         }
 
-        IEnumerator addRowScheduler()
+        IEnumerator AddRowScheduler()
         {
 
             yield return new WaitForSeconds(addRowPeriod);
@@ -133,12 +133,12 @@ namespace BubbleShooter
         {
             foreach (BubbleModel bubble in cluster)
             {
-                destroyBubble(controllerForBubble(bubble), explodes);
+                DestroyBubble(ControllerForBubble(bubble), explodes);
             }
         }
 
 
-        private void addRow()
+        private void AddRow()
         {
             _pendingToAddRow = false;
             bool overflows = _grid.shiftOneRow();
@@ -146,7 +146,7 @@ namespace BubbleShooter
 
             for (int i = 0; i < geometry.columns; i++)
             {
-                BubbleController bubbleController = createBubble();
+                BubbleController bubbleController = CreateBubble();
                 bubbleController.isMoving = false;
                 this._grid.Insert(bubbleController.bubble, 0, i);
             }
@@ -176,7 +176,7 @@ namespace BubbleShooter
             _isPlaying = false;
         }
 
-        void onBubbleCollision(GameObject bubble)
+        void OnBubbleCollision(GameObject bubble)
         {
             Vector2 bubblePos = BubbleGridControllerHelper.CellForPosition(bubble.transform.position, this.geometry, this._grid.isBaselineAlignedLeft);
             if ((int)bubblePos.x >= geometry.rows)
@@ -192,7 +192,7 @@ namespace BubbleShooter
 
             if (!_pendingToAddRow)
             {
-                bubbleController.moveTo(BubbleGridControllerHelper.PositionForCell(gridPosition, geometry, this._grid.isBaselineAlignedLeft), 0.1f);
+                bubbleController.MoveTo(BubbleGridControllerHelper.PositionForCell(gridPosition, geometry, this._grid.isBaselineAlignedLeft), 0.1f);
             }
             else
             {
@@ -215,8 +215,8 @@ namespace BubbleShooter
             
             if (_pendingToAddRow)
             {
-                this.addRow();
-                StartCoroutine(addRowScheduler());
+                this.AddRow();
+                StartCoroutine(AddRowScheduler());
             }
             
             if (_grid.bubbles.Count == 0)
@@ -225,10 +225,10 @@ namespace BubbleShooter
                 return;
             }
             
-            _currentBubble = createBubble();
+            _currentBubble = CreateBubble();
         }
 
-        bool canMoveToPosition(Vector3 position)
+        bool CanMoveToPosition(Vector3 position)
         {
             Vector2 location = BubbleGridControllerHelper.CellForPosition(position, geometry, _grid.isBaselineAlignedLeft);
             if ((int)location.x <= geometry.rows - 1)
