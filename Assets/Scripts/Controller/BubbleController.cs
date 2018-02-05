@@ -54,7 +54,7 @@ namespace BubbleShooter{
 		void Start () {
 			
 			
-			this.GetComponent<Renderer>().material.color = Utils.BubbleColorToColor(bubble.color);		
+			this.GetComponent<SpriteRenderer>().color = Utils.BubbleColorToColor(bubble.color);		
 		}
 
 		void Update () {
@@ -82,8 +82,8 @@ namespace BubbleShooter{
 		
 		public void kill(bool explodes){
 			StopAllCoroutines();
-			Destroy(this.transform.GetComponent<Rigidbody>());
-			Destroy(this.transform.GetComponent<Collider>());
+			Destroy(this.transform.GetComponent<Rigidbody2D>());
+			Destroy(this.transform.GetComponent<Collider2D>());
 			if (explodes)
 			{
 				StartCoroutine(scaleTo(new Vector3(0,0,0), 0.15f));
@@ -110,7 +110,7 @@ namespace BubbleShooter{
 				yield return null;
 			}
 			transform.position = destination;
-			if (this.GetComponent<Rigidbody>() == null){
+			if (this.GetComponent<Rigidbody2D>() == null){
 				Destroy (this.gameObject);
 			}
 		}
@@ -126,13 +126,13 @@ namespace BubbleShooter{
 				transform.localScale = target;
 				yield return null;
 			}
-			if (this.GetComponent<Rigidbody>() == null){
+			if (this.GetComponent<Rigidbody2D>() == null){
 				Destroy (this.gameObject);
 			}
 		}
 		
 		
-		void OnTriggerEnter(Collider collider){
+		void OnTriggerEnter2D(Collider2D collider){
 			if (this.isMoving){
 				this.isMoving = false;
 				if (collisionDelegate != null){
